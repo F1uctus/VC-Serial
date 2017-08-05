@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--AvailableCommands.xml-->
+<!--This should be in the same folder as the plugin dll-->
+<AvailableCommands>
+    <command>
+        <name>Serial</name>
+        <commandString />
+        <info>
+            <params />
+            <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial</helplink>
+            <description>
+                <default>Communicate with Serial port compatible devices, such as Arduino.
+
+When Arduino (or another device) sends message on port, you get an "Serial.Received" event with message in {1}.
+You can disable this event in options.
+
+P.S.: To get "Serial.Received" event you need at first open serial port with action Open or Write.</default>
+            </description>
+        </info>
+        <command>
+            <name>Open</name>
+            <commandString>Serial.Open</commandString>
+            <info>
+                <params>0</params>
+                <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#Open</helplink>
+                <description>
+                    <default>Opens Serial port and starts receiving messages by "Serial.Received" event.</default>
+                </description>
+            </info>
+        </command>
+        <command>
+            <name>Close</name>
+            <commandString>Serial.Close</commandString>
+            <info>
+                <params>0</params>
+                <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#Close</helplink>
+                <description>
+                    <default>Closes Serial port.</default>
+                </description>
+            </info>
+        </command>
+        <command>
+            <name>Write</name>
+            <commandString>Serial.Write</commandString>
+            <info>
+                <params>1</params>
+                <parameter name="Message" type="string" optional="False">This string will be send on port</parameter>
+                <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#Write</helplink>
+                <description>
+                    <default>If port closed, opens it how it does Serial.Open, then sends &lt;Message&gt; on port.</default>
+                </description>
+            </info>
+        </command>
+        <command>
+            <name>Upload</name>
+            <commandString>Serial.Upload</commandString>
+            <info>
+                <params>2</params>
+                <parameter name="Model" type="string" optional="False">Arduino model (See action description for supported models)</parameter>
+                <parameter name="SketchPath" type="string" optional="False">Path to sketch in .HEX format (NOT CONTAINS "with_bootloader")</parameter>
+                <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#Upload</helplink>
+                <description>
+                    <default>Uploads sketch in ".hex" format to Arduino board.
+Supported Models: (You need to set &lt;Model&gt; parameter to one of this items.)
+UnoR3, NanoR3, Micro, Mega1284, Mega2560.
+
+How make .HEX file from .ino or .pde sketch?  - To do this, in Arduino IDE menu, choose "Sketch"-&gt;"Export Compiled Binary", or type Ctrl+Alt+S.
+2 HEX files will appear in your sketch folder. (To upload sketch on Arduino, choose .HEX file, that NOT contains "with_bootloader")</default>
+                </description>
+            </info>
+        </command>
+    </command>
+</AvailableCommands>
