@@ -55,18 +55,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ArduinoUploader">
-      <HintPath>..\PluginStuff\dlls\ArduinoUploader.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="IntelHexFormatReader">
-      <HintPath>..\PluginStuff\dlls\IntelHexFormatReader.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="PluginInterface">
-      <HintPath>..\..\..\JS_system\2238parts\PluginInterface.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
