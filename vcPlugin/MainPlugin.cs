@@ -52,7 +52,7 @@ namespace Serial
 
         public IPluginHost Host
         {
-            get => myHost;
+            get { return myHost; }
             set
             {
                 myHost = value;
@@ -179,12 +179,14 @@ namespace Serial
                                 return AR;
                             }
                             if (!MainCtl.OpenedPortsNames.Contains(parsedParams[0]))
-                            {
-                                if (!int.TryParse(parsedParams[1], out int Bauds))
+                            { bool UseDtr = false;
+                                int Bauds = 9600;
+
+                                if (!int.TryParse(parsedParams[1], out Bauds))
                                 {
                                     AR.setError("Incorrect port Baud rate.");
                                 }
-                                else if (!bool.TryParse(parsedParams[2], out bool UseDtr))
+                                else if (!bool.TryParse(parsedParams[2], out UseDtr))
                                 {
                                     AR.setError("Incorrect \"Use DTR\" parameter.");
                                 }
@@ -223,8 +225,10 @@ namespace Serial
                         }
                     case "getports":
                         {
-                            if (!bool.TryParse(parsedParams[0], out bool FriendlyNames) ||
-                                !bool.TryParse(parsedParams[1], out bool ShowOnlyOpenedPorts))
+                            bool FriendlyNames = false;
+                            bool ShowOnlyOpenedPorts = false;
+                            if (!bool.TryParse(parsedParams[0], out  FriendlyNames) ||
+                                !bool.TryParse(parsedParams[1], out  ShowOnlyOpenedPorts))
                             {
                                 FriendlyNames = false;
                                 ShowOnlyOpenedPorts = false;
@@ -273,7 +277,8 @@ namespace Serial
                                 AR.setError("Expected 1 parameter.");
                                 return AR;
                             }
-                            byte[] ParsedBytes = ParseHexString(parsedParams[0], out bool converted);
+                            bool converted = false;
+                            byte[] ParsedBytes = ParseHexString(parsedParams[0], out converted);
                             if (converted)
                             {
                                 CurrentPort.Write(ParsedBytes, 0, ParsedBytes.Length);
