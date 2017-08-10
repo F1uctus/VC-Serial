@@ -105,12 +105,16 @@ namespace Serial
             {
                 new Thread(delegate ()
                 {
-                    Thread.Sleep(Options.ConcatenationInterval);
-                    PortMessage = CurrentPort.ReadExisting();
-                    if (PortMessage != "")
+                    //added try catch to fix crashing when closing VC
+                    try
                     {
-                        Host.triggerEvent("Serial.Received", new List<string> { ((SerialPort)sender).PortName, PortMessage });
-                    }
+                        Thread.Sleep(Options.ConcatenationInterval);
+                        PortMessage = CurrentPort.ReadExisting();
+                        if (PortMessage != "")
+                        {
+                            Host.triggerEvent("Serial.Received", new List<string> { ((SerialPort)sender).PortName, PortMessage });
+                        }
+                    }catch { }
                 }).Start();
             }
             else
@@ -171,7 +175,7 @@ namespace Serial
                             }
                             return AR;
                         }
-                    case "open": // [0] - PortName, [1] - Bauds, [2] - DTR, [3] - "Find Arduino"
+                    case "open": // [0] - PortName, [1] - Baud, [2] - DTR, [3] - "Find Arduino"
                         {
                             if (parsedParams.Length < 1)
                             {
@@ -179,14 +183,14 @@ namespace Serial
                                 return AR;
                             }
                             if (!MainCtl.OpenedPortsNames.Contains(parsedParams[0]))
-                            { bool UseDtr = false;
-                                int Bauds = 9600;
+                            { bool useDtr = false;
+                                int baudRate = 9600;
 
-                                if (!int.TryParse(parsedParams[1], out Bauds))
+                                if (!int.TryParse(parsedParams[1], out baudRate))
                                 {
                                     AR.setError("Incorrect port Baud rate.");
                                 }
-                                else if (!bool.TryParse(parsedParams[2], out UseDtr))
+                                else if (!bool.TryParse(parsedParams[2], out useDtr))
                                 {
                                     AR.setError("Incorrect \"Use DTR\" parameter.");
                                 }
@@ -197,15 +201,15 @@ namespace Serial
                                         OpenedPorts.Add(new SerialPort
                                         {
                                             PortName = parsedParams[0],
-                                            BaudRate = Bauds,
-                                            DtrEnable = UseDtr
+                                            BaudRate = baudRate,
+                                            DtrEnable = useDtr
                                         });
                                         MainCtl.OpenedPortsNames.Add(parsedParams[0]);
                                         AR = OpenPortFromList(parsedParams[0]);
                                     }
                                     else // Scan Arduino
                                     {
-                                        if (AutoOpenArduinoPort(Bauds, UseDtr))
+                                        if (AutoOpenArduinoPort(baudRate, useDtr))
                                         {
                                             AR.setInfo("Arduino port selected.");
                                         }
