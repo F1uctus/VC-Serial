@@ -9,12 +9,9 @@ namespace Serial
     public class PluginOptions
     {
         //define variable to hold the options you need to keep track of here
-        public int Bauds;
-        public string Port;
         public bool GenEventOnReceive;
         public bool ConcateStrings;
         public int ConcatenationInterval;
-        public bool DTRenabled;
 
         //this is used to load and save options to the correct folder
         private readonly string OptionsPath;
@@ -22,12 +19,9 @@ namespace Serial
         public PluginOptions()
         {
             //set default values
-            Bauds = 9600;
-            Port = "";
             GenEventOnReceive = true;
             ConcateStrings = false;
             ConcatenationInterval = 100;
-            DTRenabled = false;
 
             //find the correct folder and store it for later use by the load and save methods
             OptionsPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Options.xml";
@@ -46,12 +40,6 @@ namespace Serial
                 string OptionValue = Option.Attributes["value"].Value;
                 switch (Option.Attributes["name"].Value)
                 {
-                    case "Bauds":
-                        Bauds = Convert.ToInt32(OptionValue);
-                        break;
-                    case "Port":
-                        Port = OptionValue;
-                        break;
                     case "GenEventOnReceive":
                         GenEventOnReceive = Convert.ToBoolean(OptionValue);
                         break;
@@ -60,9 +48,6 @@ namespace Serial
                         break;
                     case "ConcatenationInterval":
                         ConcatenationInterval = Convert.ToInt32(OptionValue);
-                        break;
-                    case "DTRenabled":
-                        DTRenabled = Convert.ToBoolean(OptionValue);
                         break;
                 }
             }
@@ -80,12 +65,9 @@ namespace Serial
                 writer.WriteComment("Serial plugin options");
                 writer.WriteStartElement("Options");
                 {
-                    WriteOption(writer, "Bauds", Bauds.ToString());
-                    WriteOption(writer, "Port", Port);
                     WriteOption(writer, "GenEventOnReceive", GenEventOnReceive.ToString());
                     WriteOption(writer, "ConcateStrings", ConcateStrings.ToString());
                     WriteOption(writer, "ConcatenationInterval", ConcatenationInterval.ToString());
-                    WriteOption(writer, "DTRenabled", DTRenabled.ToString());
                 }
                 writer.WriteEndElement();//options
                 writer.WriteEndDocument();

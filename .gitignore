@@ -45,3 +45,6 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+/vcPlugin/obj
+/.vs/Serial/v15
+/vcPlugin/bin

@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="us-ascii"?>
 <!--Serial plugin options-->
 <Options>
-    <Option name="Bauds" value="9600" />
-    <Option name="Port" value="" />
     <Option name="GenEventOnReceive" value="True" />
-    <Option name="ConcateStrings" value="False" />
-    <Option name="ConcatenationInterval" value="100" />
-    <Option name="DTRenabled" value="False" />
+    <Option name="ConcateStrings" value="True" />
+    <Option name="ConcatenationInterval" value="200" />
 </Options>
