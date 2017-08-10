@@ -173,6 +173,11 @@ namespace Serial
                         }
                     case "open": // [0] - PortName, [1] - Bauds, [2] - DTR, [3] - "Find Arduino"
                         {
+                            if (parsedParams.Length < 1)
+                            {
+                                AR.setError("Parameters missing.");
+                                return AR;
+                            }
                             if (!MainCtl.OpenedPortsNames.Contains(parsedParams[0]))
                             {
                                 if (!int.TryParse(parsedParams[1], out int Bauds))
@@ -263,6 +268,11 @@ namespace Serial
                         }
                     case "write":
                         {
+                            if (parsedParams.Length < 1)
+                            {
+                                AR.setError("Expected 1 parameter.");
+                                return AR;
+                            }
                             byte[] ParsedBytes = ParseHexString(parsedParams[0], out bool converted);
                             if (converted)
                             {
