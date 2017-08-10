@@ -367,15 +367,28 @@ namespace Serial
                 AR.setError("Указанный файл не существует");
                 return AR;
             }
+
             string PortToUpload = CurrentPort.PortName;
+            int Bauds = CurrentPort.BaudRate;
+            bool Dtr = CurrentPort.DtrEnable;
             CurrentPort.Close();
             CurrentPort.Dispose();
+
             new ArduinoSketchUploader(new ArduinoSketchUploaderOptions
             {
                 ArduinoModel = Model,
                 FileName = file,
                 PortName = PortToUpload
             }).UploadSketch();
+
+            CurrentPort = new SerialPort
+            {
+                PortName = PortToUpload,
+                BaudRate = Bauds,
+                DtrEnable = Dtr
+            };
+            CurrentPort.DataReceived += CurrentPort_DataReceived;
+            CurrentPort.Open();
             AR.setInfo("OK");
             return AR;
         }
