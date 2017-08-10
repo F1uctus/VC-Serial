@@ -276,6 +276,11 @@ namespace Serial
                         }
                     case "upload":
                         {
+                            if (parsedParams.Length < 2)
+                            {
+                                AR.setError("Expected 2 parameters.");
+                                return AR;
+                            }
                             AR = UploadSketch(parsedParams[0], parsedParams[1]);
                             break;
                         }
@@ -359,12 +364,12 @@ namespace Serial
                     Model = ArduinoModel.Mega1284;
                     break;
                 default:
-                    AR.setError("Некорректная модель Arduino");
+                    AR.setError("Incorrect Arduino model.");
                     return AR;
             }
             if (!File.Exists(file))
             {
-                AR.setError("Указанный файл не существует");
+                AR.setError("Sketch file doesn't exists.");
                 return AR;
             }
 
