@@ -73,5 +73,18 @@ How make .HEX file from .ino or .pde sketch?  - To do this, in Arduino IDE menu,
                 </description>
             </info>
         </command>
+        <command>
+            <name>GetPorts</name>
+            <commandString>Serial.GetPorts</commandString>
+            <info>
+                <params>2</params>
+                <parameter name="FriendlyNames" type="boolean" optional="False" />
+                <parameter name="GetOpened" type="boolean" optional="False" />
+                <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#GetPorts</helplink>
+                <description>
+                    <default>Return a list of available serial ports.</default>
+                </description>
+            </info>
+        </command>
     </command>
 </AvailableCommands>
