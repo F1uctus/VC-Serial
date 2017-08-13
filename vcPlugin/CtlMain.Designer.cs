@@ -191,14 +191,15 @@
             // 
             // btnUpdatePortsList
             // 
-            this.btnUpdatePortsList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnUpdatePortsList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnUpdatePortsList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(67)))), ((int)(((byte)(110)))));
             this.btnUpdatePortsList.FlatAppearance.BorderSize = 0;
             this.btnUpdatePortsList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnUpdatePortsList.ForeColor = System.Drawing.SystemColors.Window;
             this.btnUpdatePortsList.Location = new System.Drawing.Point(3, 400);
             this.btnUpdatePortsList.Name = "btnUpdatePortsList";
-            this.btnUpdatePortsList.Size = new System.Drawing.Size(136, 25);
+            this.btnUpdatePortsList.Size = new System.Drawing.Size(373, 25);
             this.btnUpdatePortsList.TabIndex = 27;
             this.btnUpdatePortsList.Text = "Update list";
             this.btnUpdatePortsList.UseVisualStyleBackColor = false;

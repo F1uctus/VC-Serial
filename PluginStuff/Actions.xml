@@ -21,7 +21,11 @@ P.S.: To get "Serial.Received" event you need at first open serial port with act
             <name>Open</name>
             <commandString>Serial.Open</commandString>
             <info>
-                <params>0</params>
+                <params>3-4</params>
+                <parameter name="Port" type="string" optional="False">Name of port to open / select. Example COM3</parameter>
+                <parameter name="Baud" type="integer" optional="False">Baud rate to connect at.</parameter>
+                <parameter name="DtrEnable" type="boolean" optional="False">True or False to Enable/Disable DTR</parameter>
+                <parameter name="FindArduino" type="boolean" optional="True">True to search COM ports for first Arduino</parameter>
                 <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#Open</helplink>
                 <description>
                     <default>Opens Serial port and starts receiving messages by "Serial.Received" event.</default>

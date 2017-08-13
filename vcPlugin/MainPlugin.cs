@@ -211,7 +211,7 @@ namespace Serial
                                     {
                                         if (AutoOpenArduinoPort(baudRate, useDtr))
                                         {
-                                            AR.setInfo("Arduino port selected.");
+                                            AR.setInfo("Arduino port selected: "+CurrentPort.PortName);
                                         }
                                         else
                                         {
@@ -333,13 +333,17 @@ namespace Serial
         // put other methods here.  perhaps called by 'doAction'
         private bool AutoOpenArduinoPort(int bauds, bool dtr)
         {
-            using (ManagementObjectCollection Ports = new ManagementObjectSearcher("Select * from Win32_SerialPort").Get())
+            using (ManagementObjectCollection Ports = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_PnPEntity WHERE ClassGuid=\"{4d36e978-e325-11ce-bfc1-08002be10318}\"").Get())
             {
+                myHost.log("# com ports: " + Ports.Count);
                 foreach (ManagementBaseObject Dev in Ports)
                 {
                     try
                     {
-                        if ($"{Dev["Description"]}{Dev["Name"]}".Contains("duino"))
+                        String strPortInfo = Dev["Name"] + " : " + Dev["Description"];
+                        myHost.log("found port: " + strPortInfo);
+
+                        if (!strPortInfo.Contains("Communications Port"))
                         {
                             OpenedPorts.Add(new SerialPort
                             {
@@ -352,6 +356,7 @@ namespace Serial
                             return true;
                         }
                     }
+                    catch(Exception err) { myHost.log("Serial: Unable to open port: " + Dev["Name"]); }
                     finally
                     {
                         Dev.Dispose();
