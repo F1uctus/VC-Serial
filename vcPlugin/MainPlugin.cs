@@ -19,15 +19,12 @@ namespace Serial
     {
         //option variables
         private readonly PluginOptions Options = new PluginOptions();
-        private readonly List<SerialPort> OpenedPorts = new List<SerialPort>();
-        
+
         private CtlMain MainCtl;
         private SerialPort CurrentPort;
         private string PortMessage;
 
         private string ArduinoPort = "";
-        private int ArduinoBauds = 9600;
-        private bool ArduinoDTR;
 
         public Plugin()
         {
@@ -76,12 +73,12 @@ namespace Serial
             //e.g.    udpListener.myHost = this.Host;
         }
 
-        private actionResult OpenPortFromList(string portName)
+        private actionResult OpenSelectedPort(string portName)
         {
             actionResult AR = new actionResult();
             try
             {
-                CurrentPort = OpenedPorts.Find(port => port.PortName == portName);
+                CurrentPort = MainCtl.OpenedPorts.Values.First(port => port.PortName == portName);
                 CurrentPort.DataReceived += CurrentPort_DataReceived;
                 CurrentPort.Open();
                 AR.setInfo("Port selected.");
@@ -148,7 +145,7 @@ namespace Serial
                             {
                                 AR.setError("Incorrect port name. Using last selected port.");
                             }
-                            else if (!MainCtl.OpenedPortsNames.Contains(parsedParams[0]))
+                            else if (!MainCtl.OpenedPorts.Keys.Contains(parsedParams[0]))
                             {
                                 AR.setError("Specified port isn't open. Using last selected port.");
                             }
@@ -160,17 +157,12 @@ namespace Serial
                             {
                                 if (parsedParams.Length == 1 || parsedParams[1].ToLower() != "true")
                                 {
-                                    OpenPortFromList(parsedParams[0]);
+                                    OpenSelectedPort(parsedParams[0]);
                                     AR.setInfo("Using specified port.");
                                 }
-                                else // Scan Arduino
+                                else // Select Arduino
                                 {
-                                    CurrentPort = new SerialPort
-                                    {
-                                        PortName = ArduinoPort,
-                                        BaudRate = ArduinoBauds,
-                                        DtrEnable = ArduinoDTR
-                                    };
+                                    CurrentPort = MainCtl.OpenedPorts.Values.FirstOrDefault(port => port.PortName == ArduinoPort);
                                 }
                             }
                             return AR;
@@ -182,8 +174,9 @@ namespace Serial
                                 AR.setError("Parameters missing.");
                                 return AR;
                             }
-                            if (!MainCtl.OpenedPortsNames.Contains(parsedParams[0]))
-                            { bool useDtr = false;
+                            if (!MainCtl.OpenedPorts.Keys.Contains(parsedParams[0]))
+                            {
+                                bool useDtr = false;
                                 int baudRate = 9600;
 
                                 if (!int.TryParse(parsedParams[1], out baudRate))
@@ -198,25 +191,17 @@ namespace Serial
                                 {
                                     if (parsedParams.Length < 4 || parsedParams[3].ToLower() != "true")
                                     {
-                                        OpenedPorts.Add(new SerialPort
+                                        MainCtl.OpenedPorts.Add(parsedParams[0], new SerialPort
                                         {
                                             PortName = parsedParams[0],
                                             BaudRate = baudRate,
                                             DtrEnable = useDtr
                                         });
-                                        MainCtl.OpenedPortsNames.Add(parsedParams[0]);
-                                        AR = OpenPortFromList(parsedParams[0]);
+                                        AR = OpenSelectedPort(parsedParams[0]);
                                     }
                                     else // Scan Arduino
                                     {
-                                        if (AutoOpenArduinoPort(baudRate, useDtr))
-                                        {
-                                            AR.setInfo("Arduino port selected: "+CurrentPort.PortName);
-                                        }
-                                        else
-                                        {
-                                            AR.setError("Arduino not found.");
-                                        }
+                                        AR = DiscoverArduinoDevices(baudRate, useDtr);
                                     }
                                     MainCtl.UpdatePortsList(null, null);
                                 }
@@ -229,12 +214,14 @@ namespace Serial
                         }
                     case "getports":
                         {
-                            bool FriendlyNames = false;
-                            bool ShowOnlyOpenedPorts = false;
-                            if (!bool.TryParse(parsedParams[0], out  FriendlyNames) ||
-                                !bool.TryParse(parsedParams[1], out  ShowOnlyOpenedPorts))
+                            bool FriendlyNames;
+                            bool ShowOnlyOpenedPorts;
+                            if (!bool.TryParse(parsedParams[0], out FriendlyNames))
                             {
                                 FriendlyNames = false;
+                            }
+                            if (!bool.TryParse(parsedParams[1], out ShowOnlyOpenedPorts))
+                            {
                                 ShowOnlyOpenedPorts = false;
                             }
                             if (FriendlyNames)
@@ -248,7 +235,7 @@ namespace Serial
                                         {
                                             if (ShowOnlyOpenedPorts)
                                             {
-                                                if (MainCtl.OpenedPortsNames.Contains(Dev["DeviceID"].ToString()))
+                                                if (MainCtl.OpenedPorts.Keys.Contains(Dev["DeviceID"].ToString()))
                                                 {
                                                     Names.Add($"{Dev["Name"]}\r\n");
                                                 }
@@ -269,7 +256,7 @@ namespace Serial
                             else
                             {
                                 AR.setSuccess(ShowOnlyOpenedPorts
-                                    ? string.Join("\r\n", MainCtl.OpenedPortsNames)
+                                    ? string.Join("\r\n", MainCtl.OpenedPorts.Keys)
                                     : string.Join("\r\n", AllPorts));
                             }
                             break;
@@ -305,8 +292,7 @@ namespace Serial
                         }
                     case "close":
                         {
-                            OpenedPorts.Remove(CurrentPort);
-                            MainCtl.OpenedPortsNames.Remove(CurrentPort.PortName);
+                            MainCtl.OpenedPorts.Remove(CurrentPort.PortName);
                             CurrentPort.Close();
                             CurrentPort.Dispose();
                             CurrentPort = null;
@@ -330,40 +316,35 @@ namespace Serial
 
         #region other methods
 
-        // put other methods here.  perhaps called by 'doAction'
-        private bool AutoOpenArduinoPort(int bauds, bool dtr)
+        private actionResult DiscoverArduinoDevices(int bauds, bool useDtr)
         {
-            using (ManagementObjectCollection Ports = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_PnPEntity WHERE ClassGuid=\"{4d36e978-e325-11ce-bfc1-08002be10318}\"").Get())
+            actionResult AR = new actionResult();
+            AR.setInfo("Arduino not found.");
+            try
             {
-                myHost.log("# com ports: " + Ports.Count);
-                foreach (ManagementBaseObject Dev in Ports)
+                // Scan through each SerialPort registered in the WMI.
+                foreach (ManagementObject Device in new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_SerialPort").Get())
                 {
-                    try
-                    {
-                        String strPortInfo = Dev["Name"] + " : " + Dev["Description"];
-                        myHost.log("found port: " + strPortInfo);
+                    // Ignore all devices that do not have an Arduino VendorID.
+                    if (!Device["PNPDeviceID"].ToString().Contains("VID_2341")) continue;
 
-                        if (!strPortInfo.Contains("Communications Port"))
-                        {
-                            OpenedPorts.Add(new SerialPort
-                            {
-                                PortName = ArduinoPort = Dev["DeviceID"].ToString(),
-                                BaudRate = ArduinoBauds = bauds,
-                                DtrEnable = ArduinoDTR = dtr
-                            });
-                            MainCtl.OpenedPortsNames.Add(ArduinoPort);
-                            OpenPortFromList(ArduinoPort);
-                            return true;
-                        }
-                    }
-                    catch(Exception err) { myHost.log("Serial: Unable to open port: " + Dev["Name"]); }
-                    finally
+                    // Add the SerialPort to the dictionary. Key = Arduino device description.
+                    MainCtl.OpenedPorts.Add(Device["DeviceID"].ToString(), new SerialPort
                     {
-                        Dev.Dispose();
-                    }
+                        PortName = ArduinoPort = Device["DeviceID"].ToString(),
+                        BaudRate = bauds,
+                        DtrEnable = useDtr
+                    });
+                    OpenSelectedPort(ArduinoPort);
+                    AR.setInfo("Arduino found.");
+                    break;
                 }
             }
-            return false;
+            catch (ManagementException mex)
+            {
+                AR.setError($"An error occurred while searching Arduino:\r\n{mex.Message}");
+            }
+            return AR;
         }
 
         private actionResult UploadSketch(string arduinoModel, string file)
@@ -447,10 +428,11 @@ namespace Serial
 
         public void Dispose()
         {
-            for (int i = 0; i < OpenedPorts.Count; i++)
+            for (int i = 0; i < MainCtl.OpenedPorts.Count; i++)
             {
-                OpenedPorts[i].Close();
-                OpenedPorts[i].Dispose();
+                var Port = MainCtl.OpenedPorts.Values.ElementAt(i);
+                Port.Close();
+                Port.Dispose();
             }
         }
     }
