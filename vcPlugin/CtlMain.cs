@@ -6,12 +6,13 @@ using System.IO.Ports;
 using System.Reflection;
 using System.Windows.Forms;
 using PluginInterface;
+using System.Linq;
 
 namespace Serial
 {
     public partial class CtlMain : UserControl
     {
-        public readonly List<string> OpenedPortsNames = new List<string>();
+        public readonly Dictionary<string, SerialPort> OpenedPorts = new Dictionary<string, SerialPort>();
 
         private readonly PluginOptions Options;
         public CtlMain(PluginOptions pluginOptions)
@@ -79,7 +80,7 @@ namespace Serial
             {
                 string PortName = Ports[Index];
                 ListAllPorts.Items.Add(PortName);
-                ListAllPorts.Items[Index].ForeColor = OpenedPortsNames.Contains(PortName)
+                ListAllPorts.Items[Index].ForeColor = OpenedPorts.Keys.Contains(PortName)
                     ? Color.ForestGreen
                     : ListAllPorts.ForeColor;
             }

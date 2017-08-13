@@ -65,8 +65,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="PluginInterface">
-      <HintPath>..\..\..\_VC2\Debug VC2\PluginInterface.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\JS_system\VC2238\PluginInterface.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
