@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Ports;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using PluginInterface;
-using System.Linq;
+using System.Management;
 
 namespace Serial
 {
     public partial class CtlMain : UserControl
     {
+        public const string SerialPortsQuery = "SELECT * FROM Win32_PnPEntity WHERE ClassGuid=\"{4d36e978-e325-11ce-bfc1-08002be10318}\"";
         public readonly Dictionary<string, SerialPort> OpenedPorts = new Dictionary<string, SerialPort>();
 
         private readonly PluginOptions Options;
@@ -58,7 +61,7 @@ namespace Serial
 
         private void Header_Click(object sender, EventArgs e)
         {
-            using (System.Diagnostics.Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))) { }
+            using (Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))) { }
         }
 
         private void CBoxConcateStrings_CheckedChanged(object sender, EventArgs e)
@@ -75,14 +78,26 @@ namespace Serial
         public void UpdatePortsList(object sender, EventArgs e)
         {
             ListAllPorts.Clear();
-            string[] Ports = SerialPort.GetPortNames();
-            for (var Index = 0; Index < Ports.Length; Index++)
+            using (ManagementObjectCollection Ports = new ManagementObjectSearcher("root\\CIMV2", SerialPortsQuery).Get())
             {
-                string PortName = Ports[Index];
-                ListAllPorts.Items.Add(PortName);
-                ListAllPorts.Items[Index].ForeColor = OpenedPorts.Keys.Contains(PortName)
-                    ? Color.ForestGreen
-                    : ListAllPorts.ForeColor;
+                int i = 0;
+                foreach (ManagementBaseObject Dev in Ports)
+                {
+                    try
+                    {
+                        ListAllPorts.Items.Add(Dev["Name"].ToString());
+                        if (OpenedPorts.Keys.Contains(Dev["Name"].ToString()))
+                        {
+                            ListAllPorts.Items.Cast<ListViewItem>().ElementAt(i).ForeColor = Color.ForestGreen;
+                        }
+                    }
+                    catch { }
+                    finally
+                    {
+                        Dev.Dispose();
+                    }
+                    i++;
+                }
             }
         }
     }

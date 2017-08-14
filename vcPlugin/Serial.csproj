@@ -135,6 +135,7 @@
   <PropertyGroup>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(TargetDir)*.dll" "J:\_VC2\Debug VC2\plugins\$(TargetName)\" /Y /S</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

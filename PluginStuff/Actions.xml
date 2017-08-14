@@ -14,7 +14,7 @@
 When Arduino (or another device) sends message on port, you get an "Serial.Received" event with message in {1}.
 You can disable this event in options.
 
-P.S.: To get "Serial.Received" event you need at first open serial port with action Open or Write.</default>
+P.S.: To get "Serial.Received" event you need at first open serial port with action Open.</default>
             </description>
         </info>
         <command>
