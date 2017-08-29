@@ -9,22 +9,16 @@ namespace Serial
     public class PluginOptions
     {
         //define variable to hold the options you need to keep track of here
-        public bool GenEventOnReceive;
-        public bool ConcateStrings;
-        public int ConcatenationInterval;
+        public bool GenEventOnReceive = true;
+        public bool ConcateStrings = false;
+        public int ConcatenationInterval = 100;
 
         //this is used to load and save options to the correct folder
-        private readonly string OptionsPath;
+        private readonly string OptionsPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Options.xml";
 
         public PluginOptions()
         {
-            //set default values
-            GenEventOnReceive = true;
-            ConcateStrings = false;
-            ConcatenationInterval = 100;
-
             //find the correct folder and store it for later use by the load and save methods
-            OptionsPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\Options.xml";
             if (System.IO.File.Exists(OptionsPath)) LoadOptionsFromXml();
         }
         /// <summary>
