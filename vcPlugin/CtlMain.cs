@@ -5,10 +5,10 @@ using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Management;
 using System.Reflection;
 using System.Windows.Forms;
 using PluginInterface;
-using System.Management;
 
 namespace Serial
 {
@@ -44,7 +44,7 @@ namespace Serial
             {
                 Options.SaveOptionsToXml();
                 LabelSaved.Show();
-                Timer t = new Timer { Interval = 2500 };
+                var t = new Timer { Interval = 2500 };
                 t.Tick += delegate
                 {
                     LabelSaved.Hide();
@@ -61,7 +61,7 @@ namespace Serial
 
         private void Header_Click(object sender, EventArgs e)
         {
-            using (Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))) { }
+            Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
         }
 
         private void CBoxConcateStrings_CheckedChanged(object sender, EventArgs e)

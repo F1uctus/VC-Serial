@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Resources;
+
 namespace Serial.Properties {
     using System;
     
@@ -39,7 +41,7 @@ namespace Serial.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Serial.Properties.Resources", typeof(Resources).Assembly);
+                    ResourceManager temp = new global::System.Resources.ResourceManager("Serial.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
