@@ -1,6 +1,3 @@
-using ArduinoUploader;
-using ArduinoUploader.Hardware;
-using PluginInterface;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,10 +5,14 @@ using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using ArduinoUploader;
+using ArduinoUploader.Hardware;
+using PluginInterface;
 
 namespace Serial
 {
@@ -23,8 +24,6 @@ namespace Serial
         private SerialPort CurrentPort;
         private string PortMessage;
 
-        private string ArduinoPort = "";
-
         public Plugin()
         {
             //
@@ -34,17 +33,25 @@ namespace Serial
             MainCtl = (CtlMain)MainInterface;
         }
 
-        #region stuff to edit for new plugins
+        #region Plugin Attributes (get values from assembly attributes)
 
-        private IPluginHost myHost;
+        public string Name { get; } = Assembly.GetExecutingAssembly().GetName().Name;
 
-        public string Name { get; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-
-        public string Description { get; } = "Plugin for working with COM port.";
+        public string Description { get; } 
+            = Assembly.GetExecutingAssembly()
+            .GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false)
+            .OfType<AssemblyDescriptionAttribute>()
+        .FirstOrDefault()?.ToString();
 
         public bool GenEvents { get; } = true;
 
-        public string Author { get; } = "Nikitin Ilya";
+        public string Author { get; } 
+            = Assembly.GetExecutingAssembly()
+            .GetCustomAttributes(typeof(AssemblyCompanyAttribute), false)
+            .OfType<AssemblyCompanyAttribute>()
+        .FirstOrDefault()?.ToString();
+
+        private IPluginHost myHost;
 
         public IPluginHost Host
         {
@@ -57,7 +64,8 @@ namespace Serial
                 MainCtl.Plugin = this;
             }
         }
-        public string Version { get; } = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+        public string Version { get; } = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         public UserControl MainInterface { get; }
 
@@ -100,7 +108,7 @@ namespace Serial
             {
                 new Thread(delegate ()
                 {
-                    //added try catch to fix crashing when closing VC
+                    // added try catch to fix crashing when closing VC
                     try
                     {
                         Thread.Sleep(Options.ConcatenationInterval);
@@ -151,9 +159,9 @@ namespace Serial
                                 AR.setError("Invalid PortName Regex pattern.");
                                 return AR;
                             }
-                            if (parsedParams.Length < 3) // then select opened port
+                            if (parsedParams.Length < 3) // then select opened port ==============
                             {
-                                foreach (var LongPortName in MainCtl.OpenedPorts.Keys)
+                                foreach (string LongPortName in MainCtl.OpenedPorts.Keys)
                                 {
                                     if (new Regex(parsedParams[0]).Match(LongPortName).Success) // port matched
                                     {
@@ -221,11 +229,11 @@ namespace Serial
                         {
                             bool FriendlyNames;
                             bool ShowOnlyOpenedPorts;
-                            if (!bool.TryParse(parsedParams[0], out FriendlyNames))
+                            if (parsedParams[0] == null || !bool.TryParse(parsedParams[0], out FriendlyNames))
                             {
                                 FriendlyNames = false;
                             }
-                            if (!bool.TryParse(parsedParams[1], out ShowOnlyOpenedPorts))
+                            if (parsedParams[1] == null || !bool.TryParse(parsedParams[1], out ShowOnlyOpenedPorts))
                             {
                                 ShowOnlyOpenedPorts = false;
                             }
@@ -266,7 +274,7 @@ namespace Serial
                             }
                             break;
                         }
-                    case "write":
+                    case "write": // [0] - string to write on port
                         {
                             if (parsedParams.Length < 1)
                             {
@@ -285,7 +293,7 @@ namespace Serial
                             AR.setInfo("Succesfully sent: " + parsedParams[0]);
                             break;
                         }
-                    case "upload":
+                    case "upload": // [0] - Arduino Model, [1] - Path to sketch
                         {
                             if (parsedParams.Length < 2)
                             {
@@ -302,12 +310,12 @@ namespace Serial
                             CurrentPort.Dispose();
                             CurrentPort = null;
                             MainCtl.UpdatePortsList(null, null);
-                            AR.setInfo("Port closed");
+                            AR.setInfo("Port closed.");
                             break;
                         }
                     default:
                         {
-                            AR.setError("Unknown Serial plugin action");
+                            AR.setError("Unknown Serial plugin action.");
                             break;
                         }
                 }
@@ -357,7 +365,7 @@ namespace Serial
                     Model = ArduinoModel.Mega1284;
                     break;
                 default:
-                    AR.setError("Incorrect Arduino model.");
+                    AR.setError("Invalid Arduino model.");
                     return AR;
             }
             if (!File.Exists(file))
@@ -387,7 +395,7 @@ namespace Serial
             };
             CurrentPort.DataReceived += CurrentPort_DataReceived;
             CurrentPort.Open();
-            AR.setInfo("OK");
+            AR.setInfo("Sketch uploaded.");
             return AR;
         }
 
@@ -418,7 +426,7 @@ namespace Serial
         {
             for (int i = 0; i < MainCtl.OpenedPorts.Count; i++)
             {
-                var Port = MainCtl.OpenedPorts.Values.ElementAt(i);
+                SerialPort Port = MainCtl.OpenedPorts.Values.ElementAt(i);
                 Port.Close();
                 Port.Dispose();
             }

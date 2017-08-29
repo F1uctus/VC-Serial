@@ -11,10 +11,10 @@
             <description>
                 <default>Communicate with Serial port compatible devices, such as Arduino.
 
-When Arduino (or another device) sends message on port, you get an "Serial.Received" event with message in {1}.
+When device sends message on serial port, you get an "Serial.Received" event with message in {1}.
 You can disable this event in options.
 
-P.S.: To get "Serial.Received" event you need at first open serial port with action Open.</default>
+P.S.: To get "Serial.Received" event you need at first open or select serial port with action "Open".</default>
             </description>
         </info>
         <command>
@@ -22,13 +22,16 @@ P.S.: To get "Serial.Received" event you need at first open serial port with act
             <commandString>Serial.Open</commandString>
             <info>
                 <params>3-4</params>
-                <parameter name="Port" type="string" optional="False">Name of port to open / select. Example COM3</parameter>
-                <parameter name="Baud" type="integer" optional="False">Baud rate to connect at.</parameter>
-                <parameter name="DtrEnable" type="boolean" optional="False">True or False to Enable/Disable DTR</parameter>
-                <parameter name="FindArduino" type="boolean" optional="True">True to search COM ports for first Arduino</parameter>
+                <parameter name="Port RegEx pattern" type="string" optional="False">Port name regex pattern</parameter>
+                <parameter name="Baud rate" type="integer" optional="False">Baud rate to connect at.</parameter>
+                <parameter name="DTR enabled" type="boolean" optional="False">True or False to Enable/Disable DTR</parameter>
                 <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#Open</helplink>
                 <description>
-                    <default>Opens Serial port and starts receiving messages by "Serial.Received" event.</default>
+                    <default>Opens first port which name matching &lt;Port RegEx pattern&gt;.
+If specified port already opened, it becoming "Current port", and actions "Close", "Write" and "Upload" will work with this port.
+In Arduino boards, option &lt;DTR enabled&gt; restarts board after connection.
+
+After opening port you can receiving messages by "Serial.Received" event.</default>
                 </description>
             </info>
         </command>
@@ -39,7 +42,7 @@ P.S.: To get "Serial.Received" event you need at first open serial port with act
                 <params>0</params>
                 <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#Close</helplink>
                 <description>
-                    <default>Closes Serial port.</default>
+                    <default>Closes current selected port.</default>
                 </description>
             </info>
         </command>
@@ -48,10 +51,10 @@ P.S.: To get "Serial.Received" event you need at first open serial port with act
             <commandString>Serial.Write</commandString>
             <info>
                 <params>1</params>
-                <parameter name="Message" type="string" optional="False">This string will be send on port</parameter>
+                <parameter name="Message" type="string" optional="False">This string will be send on current serial port</parameter>
                 <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#Write</helplink>
                 <description>
-                    <default>If port closed, opens it how it does Serial.Open, then sends &lt;Message&gt; on port.</default>
+                    <default>Sends &lt;Message&gt; on current selected port.</default>
                 </description>
             </info>
         </command>
@@ -61,14 +64,15 @@ P.S.: To get "Serial.Received" event you need at first open serial port with act
             <info>
                 <params>2</params>
                 <parameter name="Model" type="string" optional="False">Arduino model (See action description for supported models)</parameter>
-                <parameter name="SketchPath" type="string" optional="False">Path to sketch in .HEX format (NOT CONTAINS "with_bootloader")</parameter>
+                <parameter name="Path to .hex sketch" type="string" optional="False">Path to sketch in .HEX format (NOT CONTAINS "with_bootloader")</parameter>
                 <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#Upload</helplink>
                 <description>
-                    <default>Uploads sketch in ".hex" format to Arduino board.
-Supported Models: (You need to set &lt;Model&gt; parameter to one of this items.)
+                    <default>Uploads sketch in ".hex" format to Arduino board on current port.
+
+Supported Models: (You need to set &lt;Model&gt; parameter to one of this items.) Not case sensitive.
 UnoR3, NanoR3, Micro, Mega1284, Mega2560.
 
-How make .HEX file from .ino or .pde sketch?  - To do this, in Arduino IDE menu, choose "Sketch"-&gt;"Export Compiled Binary", or type Ctrl+Alt+S.
+How make .HEX file from .ino or .pde sketch?  - In Arduino IDE menu, choose "Sketch" -&gt; "Export Compiled Binary", or type Ctrl+Alt+S.
 2 HEX files will appear in your sketch folder. (To upload sketch on Arduino, choose .HEX file, that NOT contains "with_bootloader")</default>
                 </description>
             </info>
@@ -77,9 +81,9 @@ How make .HEX file from .ino or .pde sketch?  - To do this, in Arduino IDE menu,
             <name>GetPorts</name>
             <commandString>Serial.GetPorts</commandString>
             <info>
-                <params>2</params>
-                <parameter name="FriendlyNames" type="boolean" optional="False" />
-                <parameter name="GetOpened" type="boolean" optional="False" />
+                <params>0-2</params>
+                <parameter name="FriendlyNames" type="boolean" optional="True">Returns more descriptive ports names. Default false.</parameter>
+                <parameter name="GetOpened" type="boolean" optional="True">Returns only opened ports. Default false.</parameter>
                 <helplink>http://voxcommando.com/mediawiki/index.php?title=Plugin_Serial#GetPorts</helplink>
                 <description>
                     <default>Return a list of available serial ports.</default>

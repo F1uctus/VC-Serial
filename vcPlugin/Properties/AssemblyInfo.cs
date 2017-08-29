@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Serial")]
-[assembly: AssemblyDescription("Plugin working with COM port.")]
+[assembly: AssemblyDescription("Work with devices connected to PC by USB/Serial/COM port.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NAIT")]
+[assembly: AssemblyCompany("Nikitin Ilya, NAIT")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyCopyright("Copyright © Nikitin Advanced Idea Technology 2017")]
 [assembly: AssemblyTrademark("")]
