@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.IO.Ports;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using PluginInterface;
 
@@ -14,10 +13,8 @@ namespace Serial
 {
     public partial class CtlMain : UserControl
     {
-        public const string SerialPortsQuery = "SELECT * FROM Win32_PnPEntity WHERE ClassGuid=\"{4d36e978-e325-11ce-bfc1-08002be10318}\"";
-        public readonly Dictionary<string, SerialPort> OpenedPorts = new Dictionary<string, SerialPort>();
-
         private readonly PluginOptions Options;
+
         public CtlMain(PluginOptions pluginOptions)
         {
             InitializeComponent();
@@ -78,23 +75,27 @@ namespace Serial
         public void UpdatePortsList(object sender, EventArgs e)
         {
             ListAllPorts.Clear();
-            using (ManagementObjectCollection Ports = new ManagementObjectSearcher("root\\CIMV2", SerialPortsQuery).Get())
+            using (ManagementObjectCollection Ports = new ManagementObjectSearcher("root\\CIMV2", Serial.Plugin.SerialPortsQuery).Get())
             {
                 int i = 0;
-                foreach (ManagementBaseObject Dev in Ports)
+                foreach (ManagementBaseObject Device in Ports)
                 {
                     try
                     {
-                        ListAllPorts.Items.Add(Dev["Name"].ToString());
-                        if (OpenedPorts.Keys.Contains(Dev["Name"].ToString()))
+                        ListAllPorts.Items.Add(Device["Name"].ToString());
+                        if (Serial.Plugin.OpenedPorts.Keys.Contains(Device["Name"].ToString()))
                         {
-                            ListAllPorts.Items.Cast<ListViewItem>().ElementAt(i).ForeColor = Color.ForestGreen;
+                            ListAllPorts.Items[i].ForeColor = Color.ForestGreen;
+                        }
+                        if (Serial.Plugin.CurrentPort.PortName == new Regex(@"(COM|LPT)\d+").Match(Device["Name"].ToString()).Value)
+                        {
+                            ListAllPorts.Items[i].ForeColor = Color.Goldenrod;
                         }
                     }
                     catch { }
                     finally
                     {
-                        Dev.Dispose();
+                        Device.Dispose();
                     }
                     i++;
                 }
