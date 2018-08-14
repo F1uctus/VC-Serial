@@ -23,13 +23,26 @@ namespace Serial {
         // Declarations of all our internal plugin variables.
         // VoxCommando expects these to be here so don't remove them.
 
+        // All properties binded to their definitions in
+        // assembly information to simplify development.
+        // Change properties in: (Visual Studio)
+        // Project -> <Project> properties -> Application -> Assembly Information
+
         public string Name { get; } = nameof(Serial);
 
-        public string Description { get; } = "Work with devices interacting with PC through the Serial / COM port.";
+        public string Description { get; } = 
+            Assembly.GetExecutingAssembly()
+                .GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false)
+                .OfType<AssemblyDescriptionAttribute>()
+                .FirstOrDefault()?.Description;
+
+        public string Author { get; } =
+            Assembly.GetExecutingAssembly()
+                    .GetCustomAttributes(typeof(AssemblyCompanyAttribute), false)
+                    .OfType<AssemblyCompanyAttribute>()
+                    .FirstOrDefault()?.Company;
 
         public bool GenEvents { get; } = true;
-
-        public string Author { get; } = "Nikitin Ilya";
 
         internal static IPluginHost HostInstance;
 
