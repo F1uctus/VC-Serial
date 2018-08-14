@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="us-ascii"?>
-<!--Serial plugin options-->
-<Options>
-    <Option name="GenEventOnReceive" value="True" />
-    <Option name="ConcateStrings" value="True" />
-    <Option name="ConcatenationInterval" value="200" />
-</Options>

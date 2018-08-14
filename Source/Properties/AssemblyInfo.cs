@@ -1,14 +1,15 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Serial")]
-[assembly: AssemblyDescription("Work with devices connected to PC by USB/Serial/COM port.")]
+[assembly: AssemblyDescription("Work with devices connected to PC by Serial/COM port.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Nikitin Ilya, NAIT")]
+[assembly: AssemblyCompany("Nikitin Ilya")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright © Nikitin Advanced Idea Technology 2017")]
+[assembly: AssemblyCopyright("Copyright © Fluctus Technologies, 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -27,5 +28,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.4.5")]
-[assembly: AssemblyFileVersion("1.0.4.5")]
+[assembly: AssemblyVersion("1.0.4.8")]
+[assembly: AssemblyFileVersion("1.0.4.8")]

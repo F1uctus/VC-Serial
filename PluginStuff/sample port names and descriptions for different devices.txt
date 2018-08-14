@@ -1,6 +1,0 @@
-[COM1 nothing attached]	   Communications Port (COM1) : Communications Port
-
-[NANO] 		   Prolific USB-to-Serial Comm Port (COM6) : Prolific USB-to-Serial Comm Port
-[NodeMCU 0.9]  USB-SERIAL CH340 (COM5) : USB-SERIAL CH340
-[Wemos]        USB-SERIAL CH340 (COM5) : USB-SERIAL CH340
-[Mega2560]     Arduino Mega 2560 (COM7) : Arduino Mega 2560

@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B903B235-0EA4-4BA6-BCB4-B1BA5B8A7068}</ProjectGuid>
+    <ProjectGuid>{88F6B5DB-F74F-4BDA-8950-35109EA4CF9F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Serial</RootNamespace>
@@ -36,7 +36,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -57,37 +57,43 @@
     <LangVersion>6</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ArduinoUploader">
-      <HintPath>..\PluginStuff\dlls\ArduinoUploader.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="IntelHexFormatReader">
-      <HintPath>..\PluginStuff\dlls\IntelHexFormatReader.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="ArduinoController, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Misc\dlls\ArduinoController.dll</HintPath>
     </Reference>
     <Reference Include="PluginInterface">
-      <HintPath>..\PluginStuff\dlls\PluginInterface.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>Misc\dlls\PluginInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="RJCP.SerialPortStream, Version=2.1.4.0, Culture=neutral, PublicKeyToken=5f5e7b70c6a74deb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Misc\dlls\RJCP.SerialPortStream.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArduinoActions.cs" />
     <Compile Include="CtlMain.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="CtlMain.Designer.cs">
       <DependentUpon>CtlMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainPlugin.cs" />
+    <Compile Include="Plugin.cs" />
     <Compile Include="PluginOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerialPortActions.cs" />
+    <None Include="Misc\Actions.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Misc\icon.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
