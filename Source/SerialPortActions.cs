@@ -16,13 +16,17 @@ namespace Serial {
 
         internal static string[] GetPortsList(bool friendlyNames, bool onlyOpened) {
             var portsNames = new List<string>();
+            Plugin.HostInstance.log(nameof(Serial) + ": Updating ports list");
+
             if (onlyOpened && Plugin.OpenedPorts.Count == 0) {
+                Plugin.HostInstance.log(nameof(Serial) + ": no ports found");
                 return new string[0];
             }
 
             using (ManagementObjectCollection ports = portsSearcher.Get()) {
                 foreach (ManagementBaseObject port in ports) {
                     string portLongName = port["Name"].ToString();
+                    Plugin.HostInstance.log(nameof(Serial) + ": found port: " + portLongName);
                     try {
                         if (onlyOpened && !Plugin.OpenedPorts.Keys.Contains(portLongName)) {
                             continue;
@@ -43,6 +47,7 @@ namespace Serial {
             if (!onlyOpened) {
                 foreach (string portLongName in Plugin.OpenedPorts.Keys) {
                     if (!portsNames.Contains(portLongName)) {
+                        Plugin.HostInstance.log(nameof(Serial) + ": removed old port: " + portLongName);
                         DestroyPort(Plugin.OpenedPorts[portLongName]);
                         Plugin.OpenedPorts.Remove(portLongName);
                     }
@@ -64,6 +69,7 @@ namespace Serial {
             if (!match.Success) {
                 throw new Exception("Port must have 'COM' type.");
             }
+            Plugin.HostInstance.log(nameof(Serial) + ": initializing port: " + portLongName);
             string portComName = match.Value;
             var port = new SerialPortStream {
                 PortName  = portComName,
@@ -77,6 +83,7 @@ namespace Serial {
 
             Plugin.OpenedPorts.Add(portLongName, port);
 
+            Plugin.HostInstance.log(nameof(Serial) + ": subscribing for port: " + portLongName);
             port.DataReceived += delegate {
                 // added try catch to fix crashing when closing VC
                 try {
@@ -98,9 +105,11 @@ namespace Serial {
             };
 
             SelectPort(portComName);
+            Plugin.HostInstance.log(nameof(Serial) + ": opened port: " + portLongName);
         }
 
         internal static void SelectPort(string portComName) {
+            Plugin.HostInstance.log(nameof(Serial) + ": select port: " + portComName);
             // unsubscribe previous selected port
             if (Plugin.SelectedPort.IsAlive()) {
                 Plugin.SelectedPort.DataReceived -= SelectedPortLogOnDataReceived;
@@ -163,6 +172,7 @@ namespace Serial {
             port = null;
             Plugin.MainCtl.UpdatePortsListView();
             ar.setInfo("Port closed.");
+            Plugin.HostInstance.log(nameof(Serial) + ": destroyed port: " + portLongName);
             return ar;
         }
 

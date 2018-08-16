@@ -23,24 +23,28 @@ namespace Serial {
         // Declarations of all our internal plugin variables.
         // VoxCommando expects these to be here so don't remove them.
 
-        // All properties binded to their definitions in
+        // Properties binded to their definitions in
         // assembly information to simplify development.
         // Change properties in: (Visual Studio)
         // Project -> <Project> properties -> Application -> Assembly Information
 
+        private static readonly Assembly pluginAsm = Assembly.GetExecutingAssembly();
+
         public string Name { get; } = nameof(Serial);
 
-        public string Description { get; } = 
-            Assembly.GetExecutingAssembly()
+        public string Version { get; } = pluginAsm.GetName().Version.ToString();
+
+        public string Description { get; } =
+            pluginAsm
                 .GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false)
                 .OfType<AssemblyDescriptionAttribute>()
                 .FirstOrDefault()?.Description;
 
         public string Author { get; } =
-            Assembly.GetExecutingAssembly()
-                    .GetCustomAttributes(typeof(AssemblyCompanyAttribute), false)
-                    .OfType<AssemblyCompanyAttribute>()
-                    .FirstOrDefault()?.Company;
+            pluginAsm
+                .GetCustomAttributes(typeof(AssemblyCompanyAttribute), false)
+                .OfType<AssemblyCompanyAttribute>()
+                .FirstOrDefault()?.Company;
 
         public bool GenEvents { get; } = true;
 
@@ -53,8 +57,6 @@ namespace Serial {
                 MainCtl      = (CtlMain) MainInterface;
             }
         }
-
-        public string Version { get; } = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         public UserControl MainInterface { get; }
 

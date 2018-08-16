@@ -16,7 +16,9 @@ namespace Serial {
             cbGenEventsOnReceive.Checked = PluginOptions.GenEventOnReceive;
             cbEnableLogging.Checked      = PluginOptions.SelectedPortLogging;
             cbLogAutoscroll.Checked      = PluginOptions.SelectedPortLogAutoScroll;
-            //
+        }
+
+        private void CtlMain_Load(object sender, EventArgs e) {
             UpdatePortsListView();
         }
 
@@ -227,8 +229,7 @@ namespace Serial {
         }
 
         /// <summary>
-        ///     Appends <paramref name="message" /> to log
-        ///     inside plugin window.
+        ///     Appends <paramref name="message" /> to log.
         /// </summary>
         public void Log(string message, bool portInput) {
             Action addLogItem = delegate {
@@ -245,6 +246,7 @@ namespace Serial {
                     message      = "> " + message;
                     messageColor = Color.White;
                 }
+                Plugin.HostInstance.log(nameof(Serial) + ": " + message);
                 ListViewItem addedItem = lvLog.Items.Add(message);
                 addedItem.ForeColor = messageColor;
                 addedItem.SubItems.Add(DateTime.Now.ToString("hh:mm:ss"));
@@ -272,7 +274,6 @@ namespace Serial {
         public void UpdatePortsListView(object sender = null, EventArgs e = null) {
             // clear list
             lvPorts.Items.Clear();
-
             string[] ports = SerialPortActions.GetPortsList(true, false);
             if (ports.Length == 0) {
                 lvPorts.Items.Add("No available ports found.");
@@ -284,19 +285,21 @@ namespace Serial {
                         ListViewItem addedItem = lvPorts.Items.Add(portLongName);
                         // set opened port color
                         if (Plugin.OpenedPorts.ContainsKey(portLongName)) {
-                            addedItem.ForeColor = Color.LimeGreen;
-                        }
-                        // highlight current port
-                        if (Plugin.SelectedPort.IsAlive() &&
-                            Plugin.OpenedPorts[portLongName].PortName == Plugin.SelectedPort.PortName) {
-                            addedItem.ForeColor = Color.Gold;
+                            // highlight current port
+                            if (Plugin.SelectedPort.IsAlive() &&
+                                Plugin.OpenedPorts[portLongName].PortName == Plugin.SelectedPort.PortName) {
+                                addedItem.ForeColor = Color.Gold;
+                            }
+                            else {
+                                addedItem.ForeColor = Color.LimeGreen;
+                            }
                         }
                     }
                 }
                 // skip coloring if 0 opened ports
                 else {
-                    foreach (string port in ports) {
-                        lvPorts.Items.Add(port);
+                    foreach (string portLongName in ports) {
+                        lvPorts.Items.Add(portLongName);
                     }
                 }
             }

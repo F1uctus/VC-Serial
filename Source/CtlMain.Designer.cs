@@ -240,6 +240,7 @@ namespace Serial
             this.MinimumSize = new System.Drawing.Size(450, 450);
             this.Name = "CtlMain";
             this.Size = new System.Drawing.Size(450, 450);
+            this.Load += new System.EventHandler(this.CtlMain_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
