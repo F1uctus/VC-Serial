@@ -77,7 +77,8 @@ namespace Serial {
                 DtrEnable = dtrEnable,
                 Parity    = parity,
                 StopBits  = stopBits,
-                DataBits  = dataBits
+                DataBits  = dataBits,
+                Encoding  = Encoding.UTF8
             };
             port.Open();
 
