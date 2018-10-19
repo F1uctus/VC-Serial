@@ -88,16 +88,16 @@ namespace Serial {
             port.DataReceived += delegate {
                 // added try catch to fix crashing when closing VC
                 try {
-                    Plugin.PortMessage = port.ReadExisting();
-                    if (!string.IsNullOrWhiteSpace(Plugin.PortMessage)) {
-                        if (PluginOptions.GenEventOnReceive) {
-                            Plugin.HostInstance.triggerEvent(
-                                "Serial.Received", new List<string> {
-                                    port.PortName,
-                                    Plugin.PortMessage
-                                }
-                            );
-                        }
+                    Plugin.PortMessage = DecodeHexMessage(port.ReadExisting());
+                    if (!string.IsNullOrWhiteSpace(Plugin.PortMessage)
+                        && PluginOptions.GenEventOnReceive) {
+
+                        Plugin.HostInstance.triggerEvent(
+                            "Serial.Received", new List<string> {
+                                port.PortName,
+                                Plugin.PortMessage
+                            }
+                        );
                     }
                 }
                 catch {
@@ -107,6 +107,22 @@ namespace Serial {
 
             SelectPort(portComName);
             Plugin.HostInstance.log(nameof(Serial) + ": opened port: " + portLongName);
+        }
+
+        private static string DecodeHexMessage(string message) {
+            var sb = new StringBuilder();
+            for (var i = 0; i < message.Length; i++) {
+                char c = message[i];
+                    if (char.IsControl(c)) {
+                        sb.Append(@"\x")
+                          .Append(unchecked((byte)c).ToString("X2"));
+                    }
+                    else {
+                        sb.Append(c);
+                    }
+            }
+
+            return sb.ToString();
         }
 
         internal static void SelectPort(string portComName) {
