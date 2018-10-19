@@ -111,15 +111,20 @@ namespace Serial {
 
         private static string DecodeHexMessage(string message) {
             var sb = new StringBuilder();
-            for (var i = 0; i < message.Length; i++) {
-                char c = message[i];
+            try {
+                for (var i = 0; i < message.Length; i++) {
+                    char c = message[i];
                     if (char.IsControl(c)) {
                         sb.Append(@"\x")
-                          .Append(unchecked((byte)c).ToString("X2"));
+                          .Append(unchecked((byte) c).ToString("X2"));
                     }
                     else {
                         sb.Append(c);
                     }
+                }
+            }
+            catch (Exception err) {
+                sb.Append("[error:" + err.Message + "]");
             }
 
             return sb.ToString();
